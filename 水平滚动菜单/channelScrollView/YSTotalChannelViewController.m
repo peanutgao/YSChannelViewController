@@ -97,6 +97,8 @@
     _channelScrollView.buttomLineColor   = self.buttomLineColor;
     _channelScrollView.normalTextColor   = self.normalTextColor;
     _channelScrollView.selectedTextColor = self.selectedTextColor;
+    _channelScrollView.channelsData      = self.channelTitilesData;
+    _channelScrollView.scaleEnable       = self.textScaleEnable;
     
     _channelScrollView.channelScrollViewDelegate = self;
     
@@ -136,7 +138,11 @@
 
 
 - (void)creatContentView:(NSInteger)index {
-    UIViewController *channelVC = self.childViewControllers[index];
+    if (!self.channelControllers || self.channelControllers.count == 0) {
+        return;
+    }
+    
+    UIViewController *channelVC = self.channelControllers[index];
     CGFloat x = self.contentScrollView.ys_width * index;
     
     if (!channelVC.view.superview) {
@@ -148,6 +154,8 @@
     }
 }
 
+
+#pragma mark - ScrollView Delegate Method
 
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
     int index = scrollView.contentOffset.x / self.contentScrollView.ys_width;
@@ -165,14 +173,33 @@
 
 #pragma mark - lazy loading
 
-- (NSArray *)channelTitilesData {
-    if (!_channelTitilesData) {
-        _channelTitilesData = [NSArray array];
-    }
+//- (NSArray *)channelTitilesData {
+//    if (!_channelTitilesData) {
+//        _channelTitilesData = [NSArray array];
+//    }
+//    
+//    return _channelTitilesData;
+//}
+
+
+#pragma mark - 
+
+- (void)setChannelTitilesData:(NSArray *)channelTitilesData {
+    _channelTitilesData = channelTitilesData;
     
-    return _channelTitilesData;
+    if (self.channelScrollView) {
+        self.channelScrollView.channelsData = channelTitilesData;
+    }
 }
 
+- (void)update {
+    [self.channelScrollView update];
+    [self.contentScrollView layoutIfNeeded];
+    
+    [self channelScrollView:self.channelScrollView
+       didClickChannelLabel:[self getLabelWithIndex:self.channelIndex]
+                    atIdnex:self.channelIndex];
+}
 
 
 @end

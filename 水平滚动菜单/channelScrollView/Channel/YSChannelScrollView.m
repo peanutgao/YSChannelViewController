@@ -43,10 +43,10 @@ typedef NS_ENUM(NSInteger, LineRectType) {
             self.channelBgColor = [UIColor whiteColor];
         }
         
-        
-        [self setupScrollViewWithFrame:frame index:0];
-        [self setupLineViewWithWithFrame:frame index:0];
-        [self setupDividingLine];
+        [self setupSubviewsWithFrame:frame];
+//        [self setupScrollViewWithFrame:frame index:0];
+//        [self setupLineViewWithWithFrame:frame index:0];
+//        [self setupDividingLine];
         
         self.bounces = NO;
         self.backgroundColor = self.channelBgColor;
@@ -58,6 +58,12 @@ typedef NS_ENUM(NSInteger, LineRectType) {
 
 
 #pragma mark - Setup UI
+
+- (void)setupSubviewsWithFrame:(CGRect)frame {
+    [self setupScrollViewWithFrame:frame index:0];
+    [self setupLineViewWithWithFrame:frame index:0];
+    [self setupDividingLine];
+}
 
 /// line View
 - (void)setupLineViewWithWithFrame:(CGRect)frame index:(NSInteger)index {
@@ -248,13 +254,12 @@ typedef NS_ENUM(NSInteger, LineRectType) {
             [UIView animateWithDuration:0.25 animations:^{
                 if (label.tag == (index * 100 + 1)) {
                     label.textColor = self.selectedTextColor == nil ? [UIColor redColor] : self.selectedTextColor;
-                    label.scale = 1.15;
+                    label.scale = self.scaleEnable ? 1.1 : 1.;
                 } else {
                     label.textColor = self.normalTextColor == nil ? RGB(80, 80, 80) : self.normalTextColor;
                     label.scale = 1.;
                 }
             }];
-
 
         }
     }
@@ -262,6 +267,11 @@ typedef NS_ENUM(NSInteger, LineRectType) {
 
 
 #pragma mark -
+
+- (void)update {
+    [self setupSubviewsWithFrame:self.channelSVFrame];
+    [self layoutIfNeeded];
+}
 
 - (void)setDividingLineColor:(UIColor *)dividingLineColor {
     _dividingLineColor = dividingLineColor;

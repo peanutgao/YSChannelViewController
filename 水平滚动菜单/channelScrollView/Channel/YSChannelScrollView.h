@@ -60,6 +60,7 @@
  @brief 文字大小
  */
 @property (nonatomic, assign) NSInteger textFontSize;
+@property (nonatomic, assign) BOOL scaleEnable;
 /*!
  *  titleScrollView 代理属性
  */
@@ -79,5 +80,7 @@
  @param index 显示的频道索引
  */
 - (void)updateShowingChannel:(NSInteger)index;
+
+- (void)update;
 
 @end

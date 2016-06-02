@@ -68,6 +68,10 @@
  */
 @property (nonatomic, assign, getter=isAllowDrag) BOOL allowDrag;
 /*!
+ @brief 是否显示文字放大效果, 默认:不放大
+ */
+@property (nonatomic, assign, getter=isTextScaleEnable) BOOL textScaleEnable;
+/*!
  @brief 频道控制器名称
  */
 @property (nonatomic, strong) Class vcClass;
@@ -80,6 +84,8 @@
  @brief 代理
  */
 @property (nonatomic, weak) id<YSTotalChannelVCDelegate> delegate;
+
+- (void)update;
 
 
 @end

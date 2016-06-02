@@ -63,6 +63,7 @@
 }
 
 
+#pragma mark - 设置数据
 
 - (void)setChannelControllerParams {
     NSMutableArray *titelArrayM = [NSMutableArray array];
@@ -78,6 +79,8 @@
     
     self.totalChannelVC.channelControllers = vcArrayM;
     self.totalChannelVC.channelTitilesData = titelArrayM;
+    
+    [self.totalChannelVC update];
 }
 
 
@@ -145,6 +148,7 @@
                 [self.dataArrayM addObject:data];
             }];
             
+            // 设置数据
             [self setChannelControllerParams];
             
         });

@@ -61,6 +61,9 @@ typedef NS_ENUM(NSInteger, LineRectType) {
 
 /// line View
 - (void)setupLineViewWithWithFrame:(CGRect)frame index:(NSInteger)index {
+    if (self.channelsData == nil || self.channelsData.count == 0) {
+        return;
+    }
     CGSize fontSize = [self calculateSizeOfString:self.channelsData[index]];
     
     _lineView = [[UIView alloc] initWithFrame:CGRectMake(MARGIN * 0.5, frame.size.height * 0.9, fontSize.width, 5)];
@@ -184,6 +187,10 @@ typedef NS_ENUM(NSInteger, LineRectType) {
 
 ///
 - (void)updateFrameWithIndex:(NSInteger)index {
+    if (self.channelsData == nil || self.channelsData.count == 0) {
+        return;
+    }
+    
     CGFloat offsetX = 0;
     CGFloat lineOffsetX = 0;
     CGSize currentFontSize = [self calculateSizeOfString:self.channelsData[index]];

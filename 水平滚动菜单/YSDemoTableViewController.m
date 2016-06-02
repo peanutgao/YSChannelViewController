@@ -38,7 +38,11 @@
     if (!cell) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"REUSE_ID"];
     }
-    cell.textLabel.text = self.dataArayM[indexPath.row];
+    if (self.tempInfo == nil) {
+        cell.textLabel.text = self.dataArayM[indexPath.row];
+    } else {
+        cell.textLabel.text = self.tempInfo;
+    }
     
     return cell;
 }

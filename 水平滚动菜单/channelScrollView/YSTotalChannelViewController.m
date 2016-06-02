@@ -108,6 +108,9 @@
 #pragma mark - Action
 
 - (void)doContentScrollViewActionWithIndex:(NSInteger)index {
+    if (self.channelTitilesData == nil || self.channelTitilesData.count == 0) {
+        return;
+    }
     self.navigationItem.title = self.channelTitilesData[index];
     
     [self creatContentView:index];

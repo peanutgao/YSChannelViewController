@@ -21,7 +21,6 @@ typedef NS_ENUM(NSInteger, LineRectType) {
 @interface YSChannelScrollView()
 
 @property (nonatomic, strong) UIView *lineView;
-@property (nonatomic, strong) UIView *showView; // 正在显示的透明view
 @property (nonatomic, strong) YSChannelLabel *currentLabel;
 
 @property (nonatomic, assign) CGRect channelSVFrame;
@@ -33,6 +32,7 @@ typedef NS_ENUM(NSInteger, LineRectType) {
 
 @implementation YSChannelScrollView
 
+#pragma mark - Init Method
 
 - (instancetype)initChannelScrollViewWithFrame:(CGRect)frame channelsData:(NSArray *)channelsData {
     if (self = [super initWithFrame:frame]) {
@@ -42,7 +42,6 @@ typedef NS_ENUM(NSInteger, LineRectType) {
         if (self.channelBgColor == nil) {
             self.channelBgColor = [UIColor whiteColor];
         }
-        self.backgroundColor = self.channelBgColor;
         
         
         [self setupScrollViewWithFrame:frame index:0];
@@ -50,12 +49,15 @@ typedef NS_ENUM(NSInteger, LineRectType) {
         [self setupDividingLine];
         
         self.bounces = NO;
+        self.backgroundColor = self.channelBgColor;
 
     }
     
     return self;
 }
 
+
+#pragma mark - Setup UI
 
 /// line View
 - (void)setupLineViewWithWithFrame:(CGRect)frame index:(NSInteger)index {
@@ -69,13 +71,14 @@ typedef NS_ENUM(NSInteger, LineRectType) {
 
 /// Dividing Line
 - (void)setupDividingLine {
-    _topDividingLine    = [self creatLineVWithYRect:LineRectTypeTop];
-    _bottomDividingLine = [self creatLineVWithYRect:LineRectTypeBottom];
+    _topDividingLine    = [self creatLineViewWithYRect:LineRectTypeTop];
+    _bottomDividingLine = [self creatLineViewWithYRect:LineRectTypeBottom];
     [self addSubview:_topDividingLine];
     [self addSubview:_bottomDividingLine];
 }
 
-- (UIView *)creatLineVWithYRect:(LineRectType)lineRectType {
+
+- (UIView *)creatLineViewWithYRect:(LineRectType)lineRectType {
     CGFloat Y = 0;
     switch (lineRectType) {
         case LineRectTypeTop:
@@ -97,19 +100,6 @@ typedef NS_ENUM(NSInteger, LineRectType) {
 - (void)setupScrollViewWithFrame:(CGRect)frame index:(NSInteger)index{
     // creat labels
     CGFloat contentSizeWidth = [self creatChannelLabelWithFrame:frame textColor:nil inView:self];
-
-    // TODO: 颜色移动
-//    // creat show View
-//    CGFloat channelLabelY = 0.5;
-//    CGFloat channelLabelH = frame.size.height - 1;
-//    CGFloat channelLabelX = 0;
-//    [self creatShowViewWithFrame:CGRectMake(channelLabelX,
-//                                            channelLabelY,
-//                                            [self calculateSizeOfString:self.channelsData[index]].width,
-//                                            channelLabelH)];
-//    
-//    [self creatChannelLabelWithFrame:frame textColor:nil inView:self];
-    
     self.contentSize = CGSizeMake(contentSizeWidth, 0);
     self.showsHorizontalScrollIndicator = NO;
 }
@@ -120,6 +110,10 @@ typedef NS_ENUM(NSInteger, LineRectType) {
     CGFloat channelLabelH = frame.size.height - 2;
     __block CGFloat channelLabelX = 0;
     __block CGFloat channelLabelW = 0;
+    
+    if (self.channelsData == nil || self.channelsData.count == 0) {
+        return 0;
+    }
     
     [self.channelsData enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
         NSString *title = obj;
@@ -132,6 +126,7 @@ typedef NS_ENUM(NSInteger, LineRectType) {
                                                                     tag:idx * 100 + 1  // lebel的tag是(索引 * 100 + 1)
                                                                    text:title];
         channelLabel.textColor = color;
+        channelLabel.scale = 1.;
         channelLabel.backgroundColor = [UIColor clearColor];
         [view addSubview:channelLabel];
         
@@ -140,14 +135,6 @@ typedef NS_ENUM(NSInteger, LineRectType) {
     
     return channelLabelX;
 }
-
-// 创建用于显示红色label的底部视图
-//- (void)creatShowViewWithFrame:(CGRect)frame {
-//    _showView = [[UIView alloc] initWithFrame:frame];
-//    _showView.backgroundColor = [UIColor yellowColor];
-//    _showView.clipsToBounds = YES;
-//    [self addSubview:_showView];
-//}
 
 
 - (CGSize)calculateSizeOfString:(NSString *)aString{
@@ -174,19 +161,29 @@ typedef NS_ENUM(NSInteger, LineRectType) {
 }
 
 
+#pragma mark - Tap Action
+
 - (void)tapChannelLabel:(UITapGestureRecognizer *)tapGesture {
-    UIView *view = tapGesture.view;
+    YSChannelLabel *view = (YSChannelLabel *)tapGesture.view;
     
     NSInteger index = (view.tag - 1) / 100;
     [self updateShowingChannel:index];
+
     
-    if (self.channelScrollViewDelegate && [self.channelScrollViewDelegate respondsToSelector:@selector(channelScrollView:didClickedChannelLabelAtIdnex:)]) {
-        [self.channelScrollViewDelegate channelScrollView:self didClickedChannelLabelAtIdnex:index];
+    if (self.channelScrollViewDelegate && [self.channelScrollViewDelegate respondsToSelector:@selector(channelScrollView:didClickChannelLabel:atIdnex:)]) {
+        [self.channelScrollViewDelegate channelScrollView:self didClickChannelLabel:view atIdnex:index];
     }
 }
 
-
+/// 更新
 - (void)updateShowingChannel:(NSInteger)index {
+    [self updateFrameWithIndex:index];
+    [self updateTextDisplayWithIndex:index];
+}
+
+
+///
+- (void)updateFrameWithIndex:(NSInteger)index {
     CGFloat offsetX = 0;
     CGFloat lineOffsetX = 0;
     CGSize currentFontSize = [self calculateSizeOfString:self.channelsData[index]];
@@ -224,9 +221,6 @@ typedef NS_ENUM(NSInteger, LineRectType) {
             [self setContentOffset:CGPointMake(offsetX, 0)];
             [self.lineView setYs_width:currentFontSize.width];
             [self.lineView setYs_x:lineOffsetX];
-            
-            [self.showView setYs_width:currentFontSize.width];
-            [self.showView setYs_x:lineOffsetX];
         }];
         
     } else {
@@ -236,25 +230,28 @@ typedef NS_ENUM(NSInteger, LineRectType) {
             self.lineView.ys_width = currentFontSize.width;
         }];
     }
-    
-    [self updateTextColor:index];
-
 }
 
 
-- (void)updateTextColor:(NSInteger)index {
+- (void)updateTextDisplayWithIndex:(NSInteger)index {
     for (UIView *subView in self.subviews) {
         if ([subView isKindOfClass:[YSChannelLabel class]]) {
             YSChannelLabel *label = (YSChannelLabel *)subView;
-            if (label.tag == (index * 100 + 1)) {
-                label.textColor = self.selectedTextColor == nil ? [UIColor redColor] : self.selectedTextColor;
-            } else {
-                label.textColor = self.normalTextColor == nil ? RGB(80, 80, 80) : self.normalTextColor;
-            }
+            
+            [UIView animateWithDuration:0.25 animations:^{
+                if (label.tag == (index * 100 + 1)) {
+                    label.textColor = self.selectedTextColor == nil ? [UIColor redColor] : self.selectedTextColor;
+                    label.scale = 1.15;
+                } else {
+                    label.textColor = self.normalTextColor == nil ? RGB(80, 80, 80) : self.normalTextColor;
+                    label.scale = 1.;
+                }
+            }];
+
+
         }
     }
 }
-
 
 
 #pragma mark -

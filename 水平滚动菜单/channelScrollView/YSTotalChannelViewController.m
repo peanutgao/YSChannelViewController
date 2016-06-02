@@ -32,7 +32,9 @@
     
     self.automaticallyAdjustsScrollViewInsets = NO;
     
-    [self channelScrollView:self.channelScrollView didClickedChannelLabelAtIdnex:self.channelIndex];
+    [self channelScrollView:self.channelScrollView
+       didClickChannelLabel:[self getLabelWithIndex:self.channelIndex]
+                    atIdnex:self.channelIndex];
 }
 
 
@@ -100,23 +102,33 @@
     
 
     [self.view addSubview:_channelScrollView];
-
 }
 
 
+#pragma mark - Action
 
-#pragma mark - delegate method
-
-- (void)channelScrollView:(YSChannelScrollView *)channelScrollView didClickedChannelLabelAtIdnex:(NSInteger)index {
-    [self.channelScrollView updateShowingChannel:index];
-    
+- (void)doContentScrollViewActionWithIndex:(NSInteger)index {
     self.navigationItem.title = self.channelTitilesData[index];
     
     [self creatContentView:index];
     
     CGFloat x = self.contentScrollView.ys_width * index;
     [self.contentScrollView setContentOffset:CGPointMake(x, 0) animated:YES];
+}
+
+
+#pragma mark - YSChannelScrollView Delegate Method
+
+- (void)channelScrollView:(YSChannelScrollView *)channelScrollView
+     didClickChannelLabel:(YSChannelLabel *)channelLabel
+                  atIdnex:(NSInteger)index {
     
+    [self.channelScrollView updateShowingChannel:index];
+    [self doContentScrollViewActionWithIndex:index];
+    
+    if (self.delegate && [self.delegate respondsToSelector:@selector(totalChannelVC:channelLabel:clickedAtIndex:)]) {
+        [self.delegate totalChannelVC:self channelLabel:channelLabel clickedAtIndex:index];
+    }
 }
 
 
@@ -136,9 +148,16 @@
 
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
     int index = scrollView.contentOffset.x / self.contentScrollView.ys_width;
-    [self channelScrollView:self.channelScrollView didClickedChannelLabelAtIdnex:index];
+    
+    [self channelScrollView:self.channelScrollView didClickChannelLabel:[self getLabelWithIndex:index] atIdnex:index];
 }
 
+
+- (YSChannelLabel *)getLabelWithIndex:(NSInteger)index {
+    NSInteger tag = index  + 100 + 1;
+    YSChannelLabel *channelLabel = (YSChannelLabel *)[self.contentScrollView viewWithTag:tag];
+    return channelLabel;
+}
 
 
 #pragma mark - lazy loading

@@ -10,6 +10,25 @@
 
 #import <UIKit/UIKit.h>
 
+@class YSChannelLabel;
+@class YSTotalChannelViewController;
+@protocol YSTotalChannelVCDelegate <NSObject>
+
+@optional
+/*!
+ @brief TotalChannelVC代理方法,label被点击后会调用
+ @param totalChannelVC TotalChannelViewController
+ @param channelLable   被点击的label
+ @param index          点击的索引
+ */
+- (void)totalChannelVC:(YSTotalChannelViewController *)totalChannelVC
+          channelLabel:(YSChannelLabel *)channelLable
+        clickedAtIndex:(NSInteger)index;
+
+@end
+
+
+
 @interface YSTotalChannelViewController : UIViewController
 
 /*!
@@ -56,4 +75,14 @@
  @brief 频道控制器集合
  */
 @property (nonatomic, strong) NSArray *channelControllers;
+
+/*!
+ @brief 代理
+ */
+@property (nonatomic, weak) id<YSTotalChannelVCDelegate> delegate;
+
+
 @end
+
+
+

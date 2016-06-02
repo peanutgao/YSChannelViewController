@@ -11,15 +11,18 @@
 #define YS_ScreenWidth [UIScreen mainScreen].bounds.size.width
 
 @class YSChannelScrollView;
+@class YSChannelLabel;
 @protocol YSChannelScrollViewDelegate <NSObject>
 
 /*!
- @brief  频道点击代理方法
- 
+ @brief 频道点击代理方法
  @param channelScrollView 水平滚动菜单对象
+ @param channelLabel      被点击的label
  @param index             点击的频道索引
  */
-- (void)channelScrollView:(YSChannelScrollView *)channelScrollView didClickedChannelLabelAtIdnex:(NSInteger)index;
+- (void)channelScrollView:(YSChannelScrollView *)channelScrollView
+     didClickChannelLabel:(YSChannelLabel *)channelLabel
+                  atIdnex:(NSInteger)index;
 
 @end
 

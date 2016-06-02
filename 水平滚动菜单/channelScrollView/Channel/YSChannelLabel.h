@@ -9,4 +9,6 @@
 
 @interface YSChannelLabel : UILabel
 
+@property (nonatomic,assign) CGFloat scale;
+
 @end

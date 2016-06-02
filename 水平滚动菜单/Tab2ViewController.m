@@ -12,7 +12,7 @@
 #import "Masonry.h"
 #import "YSDemoTableViewController.h"
 
-@interface Tab2ViewController ()
+@interface Tab2ViewController ()<YSTotalChannelVCDelegate>
 
 @property (nonatomic, strong) YSTotalChannelViewController *totalChannelVC;
 
@@ -41,6 +41,7 @@
     if (!_totalChannelVC) {
         _totalChannelVC = [[YSTotalChannelViewController alloc] init];
         
+        _totalChannelVC.delegate = self;
         _totalChannelVC.scrollAnimTime = 0.5;
         _totalChannelVC.allowDrag = YES; // 允许内容拖拽滚动
         _totalChannelVC.channelTitilesData = @[@"这里是首页", @"hehe", @"前面是傻缺", @"顶三楼", @"三楼威武", @"楼上都是二缺", @"我是七楼", @"八王爷", @"九二格"];
@@ -60,6 +61,13 @@
     }
     
     return _totalChannelVC;
+}
+
+
+#pragma mark - YSTotalChannelVC Delegate
+
+- (void)totalChannelVC:(YSTotalChannelViewController *)totalChannelVC channelLabel:(YSChannelLabel *)channelLable clickedAtIndex:(NSInteger)index {
+    NSLog(@"======================");
 }
 
 @end

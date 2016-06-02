@@ -28,8 +28,18 @@
     YSTotalChannelViewController *totalChannelVC = [[YSTotalChannelViewController alloc] init];
     totalChannelVC.channelIndex = [self.textField.text integerValue];
     totalChannelVC.scrollAnimTime = 0.5;
-    totalChannelVC.allowDrag = YES; // 允许内容拖拽滚动
-    totalChannelVC.channelTitilesData = @[@"这里是首页", @"hehe", @"前面是傻缺", @"顶三楼", @"三楼威武", @"楼上都是二缺", @"我是七楼", @"八王爷", @"九二格"];
+    totalChannelVC.allowDrag = YES;        // 允许内容拖拽滚动
+    totalChannelVC.textScaleEnable = YES;  // 文字放大效果
+    totalChannelVC.channelTitilesData = @[@"这里是首页",
+                                           @"hehe",
+                                           @"前面是傻缺",
+                                           @"顶三楼",
+                                           @"三楼威武",
+                                           @"楼上都是二缺",
+                                           @"我是七楼",
+                                           @"八王爷",
+                                           @"九二格"];
+    // 设置上下分割线颜色
     totalChannelVC.dividingLineColor = [UIColor colorWithWhite:0.855 alpha:1.000];
 
     

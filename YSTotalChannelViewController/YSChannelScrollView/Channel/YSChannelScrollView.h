@@ -7,8 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
-#define YS_ScreenHeight [UIScreen mainScreen].bounds.size.height
-#define YS_ScreenWidth [UIScreen mainScreen].bounds.size.width
+#define YS_SCREEN_HIGHT [UIScreen mainScreen].bounds.size.height
+#define YS_SCREEN_WIDTH [UIScreen mainScreen].bounds.size.width
 
 @class YSChannelScrollView;
 @class YSChannelLabel;

@@ -215,15 +215,15 @@ typedef NS_ENUM(NSInteger, LineRectType) {
         lineOffsetX = preMarge + MARGIN * 0.5;
         
         // title offset
-        if ((preMarge + currentFontSize.width * 0.5) < YS_ScreenWidth * 0.5) {
+        if ((preMarge + currentFontSize.width * 0.5) < YS_SCREEN_WIDTH * 0.5) {
             offsetX = 0;
             
-        } else if ((preMarge + currentFontSize.width * 0.5) >= YS_ScreenWidth * 0.5 &&
-                   (self.contentSize.width - (preMarge + currentFontSize.width * 0.5) > YS_ScreenWidth * 0.5)) {
-            offsetX = preMarge  + currentFontSize.width * 0.5 - YS_ScreenWidth * 0.5;
+        } else if ((preMarge + currentFontSize.width * 0.5) >= YS_SCREEN_WIDTH * 0.5 &&
+                   (self.contentSize.width - (preMarge + currentFontSize.width * 0.5) > YS_SCREEN_WIDTH * 0.5)) {
+            offsetX = preMarge  + currentFontSize.width * 0.5 - YS_SCREEN_WIDTH * 0.5;
             
-        } else if ((self.contentSize.width - (preMarge + currentFontSize.width * 0.5) <= YS_ScreenWidth * 0.5)) {
-            offsetX = self.contentSize.width - YS_ScreenWidth;
+        } else if ((self.contentSize.width - (preMarge + currentFontSize.width * 0.5) <= YS_SCREEN_WIDTH * 0.5)) {
+            offsetX = self.contentSize.width - YS_SCREEN_WIDTH;
         }
         
         
@@ -288,7 +288,6 @@ typedef NS_ENUM(NSInteger, LineRectType) {
     _channelBgColor = channelBgColor;
     self.backgroundColor = channelBgColor;
 }
-
 
 - (void)setButtomLineColor:(UIColor *)buttomLineColor {
     if (!buttomLineColor) {

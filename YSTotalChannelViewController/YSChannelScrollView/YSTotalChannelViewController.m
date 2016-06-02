@@ -45,8 +45,8 @@
     
     CGFloat x = 0;
     CGFloat y = CGRectGetMaxY(self.channelScrollView.frame) + 5;    // 5是间距
-    CGFloat w = YS_ScreenHeight;
-    CGFloat h = YS_ScreenHeight;
+    CGFloat w = YS_SCREEN_HIGHT;
+    CGFloat h = YS_SCREEN_HIGHT;
     _contentScrollView.frame = CGRectMake(x, y, w, h);
     _contentScrollView.delegate = self;
     _contentScrollView.contentSize = CGSizeMake(w * self.channelTitilesData.count, 0);
@@ -84,7 +84,7 @@
 - (void)setupChannelScrollView {
     CGFloat channelSVX = 0;
     CGFloat channelSVY = 64 + 5;    // 5是间距
-    CGFloat channelSVW = YS_ScreenWidth;
+    CGFloat channelSVW = YS_SCREEN_WIDTH;
     CGFloat channelSVH = 41;
     _channelScrollView = [[YSChannelScrollView alloc] initChannelScrollViewWithFrame:CGRectMake(channelSVX,
                                                                                                 channelSVY,
@@ -169,17 +169,6 @@
     YSChannelLabel *channelLabel = (YSChannelLabel *)[self.contentScrollView viewWithTag:tag];
     return channelLabel;
 }
-
-
-#pragma mark - lazy loading
-
-//- (NSArray *)channelTitilesData {
-//    if (!_channelTitilesData) {
-//        _channelTitilesData = [NSArray array];
-//    }
-//    
-//    return _channelTitilesData;
-//}
 
 
 #pragma mark - 

@@ -44,11 +44,7 @@ typedef NS_ENUM(NSInteger, LineRectType) {
         }
         
         [self setupSubviewsWithFrame:frame];
-//        [self setupScrollViewWithFrame:frame index:0];
-//        [self setupLineViewWithWithFrame:frame index:0];
-//        [self setupDividingLine];
-        
-        self.bounces = NO;
+//        self.bounces = NO;
         self.backgroundColor = self.channelBgColor;
 
     }
@@ -99,7 +95,8 @@ typedef NS_ENUM(NSInteger, LineRectType) {
         default:
             break;
     }
-    UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0, Y, self.contentSize.width, 1)];
+    // 设置上下分割线宽度, 随意设的, 宽度够长即可
+    UIView *view = [[UIView alloc] initWithFrame:CGRectMake(- self.contentSize.width, Y, self.contentSize.width * 3, 1)];
     view.backgroundColor = self.dividingLineColor;
    
     return view;

@@ -80,7 +80,7 @@
 }
 
 
-/// 设置水平滚动视图
+/// 设置水平滚动视图,数据赋值
 - (void)setupChannelScrollView {
     CGFloat channelSVX = 0;
     CGFloat channelSVY = 64 + 5;    // 5是间距
@@ -107,7 +107,36 @@
 }
 
 
+- (void)creatContentView:(NSInteger)index {
+    if (!self.channelControllers || self.channelControllers.count == 0) {
+        return;
+    }
+    
+    UIViewController *channelVC = self.channelControllers[index];
+    CGFloat x = self.contentScrollView.ys_width * index;
+    
+    if (!channelVC.view.superview) {
+        CGFloat y = 0;
+        CGFloat w = self.contentScrollView.ys_width;
+        CGFloat h = self.contentScrollView.ys_height;
+        [channelVC.view setFrame:CGRectMake(x, y, w, h)];
+        [self.contentScrollView addSubview:channelVC.view];
+    }
+}
+
+
+
 #pragma mark - Action
+
+- (void)update {
+    [self.channelScrollView update];
+    [self.contentScrollView layoutIfNeeded];
+    
+    [self channelScrollView:self.channelScrollView
+       didClickChannelLabel:[self getLabelWithIndex:self.channelIndex]
+                    atIdnex:self.channelIndex];
+}
+
 
 - (void)doContentScrollViewActionWithIndex:(NSInteger)index {
     if (self.channelTitilesData == nil || self.channelTitilesData.count == 0) {
@@ -137,24 +166,6 @@
 }
 
 
-- (void)creatContentView:(NSInteger)index {
-    if (!self.channelControllers || self.channelControllers.count == 0) {
-        return;
-    }
-    
-    UIViewController *channelVC = self.channelControllers[index];
-    CGFloat x = self.contentScrollView.ys_width * index;
-    
-    if (!channelVC.view.superview) {
-        CGFloat y = 0;
-        CGFloat w = self.contentScrollView.ys_width;
-        CGFloat h = self.contentScrollView.ys_height;
-        [channelVC.view setFrame:CGRectMake(x, y, w, h)];
-        [self.contentScrollView addSubview:channelVC.view];
-    }
-}
-
-
 #pragma mark - ScrollView Delegate Method
 
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
@@ -164,6 +175,9 @@
 }
 
 
+
+#pragma mark - 
+
 - (YSChannelLabel *)getLabelWithIndex:(NSInteger)index {
     NSInteger tag = index  + 100 + 1;
     YSChannelLabel *channelLabel = (YSChannelLabel *)[self.contentScrollView viewWithTag:tag];
@@ -171,23 +185,12 @@
 }
 
 
-#pragma mark - 
-
 - (void)setChannelTitilesData:(NSArray *)channelTitilesData {
     _channelTitilesData = channelTitilesData;
     
     if (self.channelScrollView) {
         self.channelScrollView.channelsData = channelTitilesData;
     }
-}
-
-- (void)update {
-    [self.channelScrollView update];
-    [self.contentScrollView layoutIfNeeded];
-    
-    [self channelScrollView:self.channelScrollView
-       didClickChannelLabel:[self getLabelWithIndex:self.channelIndex]
-                    atIdnex:self.channelIndex];
 }
 
 

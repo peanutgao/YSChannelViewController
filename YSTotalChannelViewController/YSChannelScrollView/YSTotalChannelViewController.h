@@ -85,6 +85,9 @@
  */
 @property (nonatomic, weak) id<YSTotalChannelVCDelegate> delegate;
 
+/*!
+ @brief 更新数据
+ */
 - (void)update;
 
 

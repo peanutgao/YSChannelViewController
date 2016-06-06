@@ -42,10 +42,11 @@ typedef NS_ENUM(NSInteger, LineRectType) {
         if (self.channelBgColor == nil) {
             self.channelBgColor = [UIColor whiteColor];
         }
+        self.backgroundColor = self.channelBgColor;
+        //        self.bounces = NO;
+        
         
         [self setupSubviewsWithFrame:frame];
-//        self.bounces = NO;
-        self.backgroundColor = self.channelBgColor;
 
     }
     
@@ -74,7 +75,7 @@ typedef NS_ENUM(NSInteger, LineRectType) {
     
 }
 
-/// Dividing Line
+/// Dividing Line,上下分割线
 - (void)setupDividingLine {
     _topDividingLine    = [self creatLineViewWithYRect:LineRectTypeTop];
     _bottomDividingLine = [self creatLineViewWithYRect:LineRectTypeBottom];
@@ -105,21 +106,21 @@ typedef NS_ENUM(NSInteger, LineRectType) {
 
 - (void)setupScrollViewWithFrame:(CGRect)frame index:(NSInteger)index{
     // creat labels
-    CGFloat contentSizeWidth = [self creatChannelLabelWithFrame:frame textColor:nil inView:self];
+    CGFloat contentSizeWidth = [self creatChannelLabelWithTextColor:nil inView:self];
     self.contentSize = CGSizeMake(contentSizeWidth, 0);
     self.showsHorizontalScrollIndicator = NO;
 }
 
 
-- (CGFloat)creatChannelLabelWithFrame:(CGRect)frame textColor:(UIColor *)color inView:(UIView *)view{
-    CGFloat channelLabelY = 1;
-    CGFloat channelLabelH = frame.size.height - 2;
-    __block CGFloat channelLabelX = 0;
-    __block CGFloat channelLabelW = 0;
-    
+- (CGFloat)creatChannelLabelWithTextColor:(UIColor *)color inView:(UIView *)view{
     if (self.channelsData == nil || self.channelsData.count == 0) {
         return 0;
     }
+    
+    CGFloat channelLabelY = 1;
+    CGFloat channelLabelH = self.channelSVFrame.size.height - 2;
+    __block CGFloat channelLabelX = 0;
+    __block CGFloat channelLabelW = 0;
     
     [self.channelsData enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
         NSString *title = obj;
@@ -183,13 +184,13 @@ typedef NS_ENUM(NSInteger, LineRectType) {
 
 /// 更新
 - (void)updateShowingChannel:(NSInteger)index {
-    [self updateFrameWithIndex:index];
+    [self updateLocationWithIndex:index];
     [self updateTextDisplayWithIndex:index];
 }
 
 
 ///
-- (void)updateFrameWithIndex:(NSInteger)index {
+- (void)updateLocationWithIndex:(NSInteger)index {
     if (self.channelsData == nil || self.channelsData.count == 0) {
         return;
     }

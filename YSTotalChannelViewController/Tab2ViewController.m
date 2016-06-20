@@ -47,12 +47,12 @@
         _totalChannelVC.textScaleEnable = YES;  // 文字放大效果
         _totalChannelVC.channelTitilesData = @[@"这里是首页",
                                                @"hehe",
-                                               @"前面是傻缺",
-                                               @"顶三楼",
-                                               @"三楼威武",
-                                               @"楼上都是二缺",
-                                               @"我是七楼",
-                                               @"八王爷",
+//                                               @"前面是傻缺",
+//                                               @"顶三楼",
+//                                               @"三楼威武",
+//                                               @"楼上都是二缺",
+//                                               @"我是七楼",
+//                                               @"八王爷",
                                                @"九二格"];
         
         // 1. 如果用同一个控制器,直接传入控制器的类名即可
@@ -63,7 +63,7 @@
         NSMutableArray *arrayM = [NSMutableArray array];
         
         [arrayM addObject:[[YSDemoTableViewController alloc] init]];
-        for (int i = 0; i < 8; i++) {
+        for (int i = 0; i < 2; i++) {
             [arrayM addObject:[[YSDemoViewController alloc] init]];
         }
         _totalChannelVC.channelControllers = arrayM;

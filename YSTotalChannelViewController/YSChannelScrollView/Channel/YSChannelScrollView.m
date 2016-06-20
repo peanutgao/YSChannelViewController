@@ -10,7 +10,7 @@
 #import "UIView+FrameExt.h"
 
 #define FONT_SIZE 16
-#define MARGIN (18 * [UIScreen mainScreen].bounds.size.width / 375 + 0.1)
+//#define MARGIN (18 * [UIScreen mainScreen].bounds.size.width / 375 + 0.1)
 #define RGB(r,g,b)  [UIColor colorWithRed:r/255.0 green:g/255.0 blue:b/255.0 alpha:1.0]
 
 typedef NS_ENUM(NSInteger, LineRectType) {
@@ -27,6 +27,11 @@ typedef NS_ENUM(NSInteger, LineRectType) {
 
 @property (nonatomic, strong) UIView *topDividingLine;
 @property (nonatomic, strong) UIView *bottomDividingLine;
+
+@property (nonatomic, strong) NSMutableArray *labelArrayM;
+
+/// 内容总宽度 + 间距
+@property (nonatomic, assign) CGFloat totalWidth;
 
 @end
 
@@ -45,6 +50,10 @@ typedef NS_ENUM(NSInteger, LineRectType) {
         self.backgroundColor = self.channelBgColor;
         //        self.bounces = NO;
         
+        self.channelMargin = 10;
+        if (self.leftMargin == 0) {
+            self.leftMargin = self.channelMargin * 0.5;
+        }
         
         [self setupSubviewsWithFrame:frame];
 
@@ -69,7 +78,16 @@ typedef NS_ENUM(NSInteger, LineRectType) {
     }
     CGSize fontSize = [self calculateSizeOfString:self.channelsData[index]];
     
-    _lineView = [[UIView alloc] initWithFrame:CGRectMake(MARGIN * 0.5, frame.size.height * 0.9, fontSize.width, 5)];
+    
+    if (self.lineWidth <= 0) {
+        _lineView = [[UIView alloc] initWithFrame:CGRectMake(self.leftMargin, frame.size.height * 0.9, fontSize.width, 5)];
+    }
+    else {
+        _lineView = [[UIView alloc] init];
+        _lineView.bounds = CGRectMake(0, 0, self.lineWidth, 5);
+        _lineView.ys_y = frame.size.height * 0.9;
+    }
+    
     _lineView.backgroundColor = self.buttomLineColor;
     [self addSubview:_lineView];
     
@@ -77,14 +95,14 @@ typedef NS_ENUM(NSInteger, LineRectType) {
 
 /// Dividing Line,上下分割线
 - (void)setupDividingLine {
-    _topDividingLine    = [self creatLineViewWithYRect:LineRectTypeTop];
-    _bottomDividingLine = [self creatLineViewWithYRect:LineRectTypeBottom];
+    _topDividingLine    = [self creatDividingLineViewWithYRect:LineRectTypeTop];
+    _bottomDividingLine = [self creatDividingLineViewWithYRect:LineRectTypeBottom];
     [self addSubview:_topDividingLine];
     [self addSubview:_bottomDividingLine];
 }
 
 
-- (UIView *)creatLineViewWithYRect:(LineRectType)lineRectType {
+- (UIView *)creatDividingLineViewWithYRect:(LineRectType)lineRectType {
     CGFloat Y = 0;
     switch (lineRectType) {
         case LineRectTypeTop:
@@ -119,14 +137,17 @@ typedef NS_ENUM(NSInteger, LineRectType) {
     
     CGFloat channelLabelY = 1;
     CGFloat channelLabelH = self.channelSVFrame.size.height - 2;
-    __block CGFloat channelLabelX = 0;
+    __block CGFloat channelLabelX = self.leftMargin;
     __block CGFloat channelLabelW = 0;
-    
+    __block YSChannelLabel *lastLabel = nil;
+    __block NSMutableArray *fontWidthM = [NSMutableArray arrayWithCapacity:self.channelsData.count];    // 保存文字宽度
     [self.channelsData enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
         NSString *title = obj;
         
-        CGSize fontSize = [self calculateSizeOfString:title];
-        channelLabelW =  fontSize.width + MARGIN;
+        CGFloat fontWidth = [self calculateSizeOfString:title].width;
+        [fontWidthM addObject:[NSNumber numberWithFloat:fontWidth]];
+        
+        channelLabelW =  fontWidth + self.channelMargin;
         
         CGRect frame = CGRectMake(channelLabelX, channelLabelY, channelLabelW, channelLabelH);
         YSChannelLabel *channelLabel = [self creatChannelLabelWithFrame:frame
@@ -137,17 +158,61 @@ typedef NS_ENUM(NSInteger, LineRectType) {
         channelLabel.backgroundColor = [UIColor clearColor];
         [view addSubview:channelLabel];
         
-        channelLabelX += fontSize.width + MARGIN;
+        channelLabelX += fontWidth + self.channelMargin;
+        lastLabel = channelLabel;
+        
+        [self.labelArrayM addObject:channelLabel];
     }];
     
-    return channelLabelX;
+    
+    // 均分
+    // 返回 contentSize Width
+    return [self contentSizeW:channelLabelX OfAverageMarginWithFontWidths:fontWidthM];
+}
+
+
+/// 均分间距, 重新布局间距
+- (CGFloat)contentSizeW:(CGFloat)contentSizeW OfAverageMarginWithFontWidths:(NSArray *)fontWidths {
+
+    YSChannelLabel *lastLabel = [self.labelArrayM lastObject];
+    CGFloat totalWidth = CGRectGetMaxX(lastLabel.frame);
+    if (totalWidth < YS_SCREEN_WIDTH) {
+        if (self.channelsData.count == 1) {
+            lastLabel.ys_centerX = self.ys_centerX;
+        }
+        else {
+            __block CGFloat allFontWidth = 0;
+            [fontWidths enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+                allFontWidth += [obj floatValue];
+            }];
+            
+            CGFloat averageMargin = (YS_SCREEN_WIDTH - allFontWidth - self.leftMargin * 2)/(self.channelsData.count - 1);
+            
+            __weak typeof(self) weakSelf = self;
+            [self.labelArrayM enumerateObjectsUsingBlock:^(YSChannelLabel *channelLabel, NSUInteger idx, BOOL * _Nonnull stop) {
+                if (idx == 0) {
+                    channelLabel.ys_x = weakSelf.leftMargin;
+                }
+                else {
+                    YSChannelLabel *preLabel = weakSelf.labelArrayM[idx - 1];
+                    CGFloat x = averageMargin + CGRectGetMaxX(preLabel.frame);
+                    channelLabel.ys_x = x;
+                }
+            }];
+        }
+        
+        // contentSize width
+        contentSizeW = CGRectGetMaxX(lastLabel.frame) + self.leftMargin;
+    }
+    
+    return contentSizeW;
 }
 
 
 - (CGSize)calculateSizeOfString:(NSString *)aString{
     return [aString boundingRectWithSize:self.frame.size
                                  options:NSStringDrawingUsesLineFragmentOrigin
-                              attributes:@{NSFontAttributeName: [UIFont systemFontOfSize:FONT_SIZE]}
+                              attributes:@{NSFontAttributeName:[UIFont systemFontOfSize:FONT_SIZE]}
                                  context:nil].size;
 }
 
@@ -159,6 +224,7 @@ typedef NS_ENUM(NSInteger, LineRectType) {
     channelLabel.text = text;
     channelLabel.font = [UIFont systemFontOfSize:FONT_SIZE];
     channelLabel.tag = tag;
+    [channelLabel sizeToFit];
     
     UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self
                                                                                  action:@selector(tapChannelLabel:)];
@@ -184,33 +250,36 @@ typedef NS_ENUM(NSInteger, LineRectType) {
 
 /// 更新
 - (void)updateShowingChannel:(NSInteger)index {
-    [self updateLocationWithIndex:index];
+    [self updateLineLocationWithIndex:index];
     [self updateTextDisplayWithIndex:index];
 }
 
 
-///
-- (void)updateLocationWithIndex:(NSInteger)index {
+/// 更新下横线位置
+- (void)updateLineLocationWithIndex:(NSInteger)index {
     if (self.channelsData == nil || self.channelsData.count == 0) {
         return;
     }
     
     CGFloat offsetX = 0;
-    CGFloat lineOffsetX = 0;
+    __block CGFloat lineOffsetX = 0;
     CGSize currentFontSize = [self calculateSizeOfString:self.channelsData[index]];
+    
+
     
     __block CGFloat preMarge = 0;
     __weak typeof(self) weakSelf = self;
     if (index > 0) {
         [self.channelsData enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-            preMarge += [weakSelf calculateSizeOfString:obj].width + MARGIN;
+            preMarge += [weakSelf calculateSizeOfString:obj].width + self.channelMargin;
             if (idx == index - 1) {
                 *stop = YES;
             }
         }];
         
+        
         // line offset
-        lineOffsetX = preMarge + MARGIN * 0.5;
+        lineOffsetX = preMarge + self.channelMargin * 0.5;
         
         // title offset
         if ((preMarge + currentFontSize.width * 0.5) < YS_SCREEN_WIDTH * 0.5) {
@@ -228,17 +297,25 @@ typedef NS_ENUM(NSInteger, LineRectType) {
         if (self.animTime <= 0) {
             self.animTime = .3f;
         }
+        
+        YSChannelLabel *currentLabel = self.labelArrayM[index];
+
+        
         [UIView animateWithDuration:self.animTime animations:^{
             [self setContentOffset:CGPointMake(offsetX, 0)];
-            [self.lineView setYs_width:currentFontSize.width];
-            [self.lineView setYs_x:lineOffsetX];
+            
+            self.lineView.ys_width = self.lineWidth == 0 ? currentFontSize.width : self.lineWidth;
+            self.lineView.ys_centerX = currentLabel.ys_centerX;
         }];
+
         
     } else {
         [UIView animateWithDuration:self.animTime animations:^{
             [self setContentOffset:CGPointMake(0, 0)];
-            [self.lineView setYs_x:lineOffsetX + MARGIN * 0.5];
-            self.lineView.ys_width = currentFontSize.width;
+            self.lineView.ys_width = self.lineWidth == 0 ? currentFontSize.width : self.lineWidth;
+            
+            lineOffsetX += (currentFontSize.width - self.lineView.ys_width) * 0.5;
+            [self.lineView setYs_x:lineOffsetX + self.leftMargin];
         }];
     }
 }
@@ -293,6 +370,22 @@ typedef NS_ENUM(NSInteger, LineRectType) {
     }
     _buttomLineColor = buttomLineColor;
     self.lineView.backgroundColor = buttomLineColor;
+}
+
+- (void)setLineWidth:(CGFloat)lineWidth {
+    if (lineWidth <= 0) {
+        lineWidth = 50;
+    }
+    
+    _lineWidth= lineWidth;
+}
+
+
+- (NSMutableArray *)labelArrayM {
+    if (!_labelArrayM) {
+        _labelArrayM = [NSMutableArray array];
+    }
+    return _labelArrayM;
 }
 
 @end

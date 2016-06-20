@@ -60,6 +60,11 @@
  @brief 文字大小
  */
 @property (nonatomic, assign) NSInteger textFontSize;
+
+@property (nonatomic, assign) CGFloat leftMargin;
+@property (nonatomic, assign) CGFloat channelMargin;
+@property (nonatomic, assign) CGFloat lineWidth;
+
 @property (nonatomic, assign) BOOL scaleEnable;
 /*!
  *  titleScrollView 代理属性

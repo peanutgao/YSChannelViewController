@@ -99,6 +99,9 @@
     _channelScrollView.selectedTextColor = self.selectedTextColor;
     _channelScrollView.channelsData      = self.channelTitilesData;
     _channelScrollView.scaleEnable       = self.textScaleEnable;
+    _channelScrollView.leftMargin        = self.leftMargin;
+    _channelScrollView.channelMargin     = self.channelMargin;
+    _channelScrollView.lineWidth         = self.lineWidth;
     
     _channelScrollView.channelScrollViewDelegate = self;
     

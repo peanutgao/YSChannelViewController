@@ -75,6 +75,14 @@
  @brief 频道控制器名称
  */
 @property (nonatomic, strong) Class vcClass;
+/// 左边距
+@property (nonatomic, assign) CGFloat leftMargin;
+/// 频道直接间距
+@property (nonatomic, assign) CGFloat channelMargin;
+/// 下横线宽度,模式不设定宽度
+@property (nonatomic, assign) CGFloat lineWidth;
+/// TODO: 是否允许均分
+@property (nonatomic, assign) BOOL allowAverage;
 /*!
  @brief 频道控制器集合
  */

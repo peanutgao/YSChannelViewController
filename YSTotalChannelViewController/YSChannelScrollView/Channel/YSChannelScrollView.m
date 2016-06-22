@@ -52,10 +52,11 @@ typedef NS_ENUM(NSInteger, LineRectType) {
         
         self.channelMargin = 10;
         if (self.leftMargin == 0) {
-            self.leftMargin = self.channelMargin * 0.5;
+            self.leftMargin = 30;
         }
         
         [self setupSubviewsWithFrame:frame];
+        [self setupDividingLine];
 
     }
     
@@ -68,7 +69,6 @@ typedef NS_ENUM(NSInteger, LineRectType) {
 - (void)setupSubviewsWithFrame:(CGRect)frame {
     [self setupScrollViewWithFrame:frame index:0];
     [self setupLineViewWithWithFrame:frame index:0];
-    [self setupDividingLine];
 }
 
 /// line View
@@ -268,6 +268,7 @@ typedef NS_ENUM(NSInteger, LineRectType) {
     __block CGFloat lineOffsetX = 0;
     CGSize currentFontSize = [self calculateSizeOfString:self.channelsData[index]];
     
+    YSChannelLabel *currentLabel = self.labelArrayM[index];
 
     
     __block CGFloat preMarge = 0;
@@ -301,13 +302,13 @@ typedef NS_ENUM(NSInteger, LineRectType) {
             self.animTime = .3f;
         }
         
-        YSChannelLabel *currentLabel = self.labelArrayM[index];
 
         
         [UIView animateWithDuration:self.animTime animations:^{
             [self setContentOffset:CGPointMake(offsetX, 0)];
             
             self.lineView.ys_width = self.lineWidth == 0 ? currentFontSize.width : self.lineWidth;
+//            self.lineView.ys_width = currentFontSize.width;
             self.lineView.ys_centerX = currentLabel.ys_centerX;
         }];
 
@@ -316,9 +317,12 @@ typedef NS_ENUM(NSInteger, LineRectType) {
         [UIView animateWithDuration:self.animTime animations:^{
             [self setContentOffset:CGPointMake(0, 0)];
             self.lineView.ys_width = self.lineWidth == 0 ? currentFontSize.width : self.lineWidth;
+//            self.lineView.ys_width = currentFontSize.width;
+
             
             lineOffsetX += (currentFontSize.width - self.lineView.ys_width) * 0.5;
-            [self.lineView setYs_x:lineOffsetX + self.leftMargin];
+//            [self.lineView setYs_x:lineOffsetX + self.leftMargin];
+            self.lineView.ys_centerX = currentLabel.ys_centerX;
         }];
     }
 }
@@ -376,8 +380,8 @@ typedef NS_ENUM(NSInteger, LineRectType) {
 }
 
 - (void)setLineWidth:(CGFloat)lineWidth {
-    if (lineWidth <= 0) {
-        lineWidth = 50;
+    if (lineWidth < 0) {
+        lineWidth = 80;
     }
     
     _lineWidth= lineWidth;

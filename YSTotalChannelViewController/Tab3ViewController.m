@@ -95,6 +95,8 @@
         
         _totalChannelVC.scrollAnimTime = 0.5;
         _totalChannelVC.allowDrag = YES; // 允许内容拖拽滚动
+        _totalChannelVC.lineWidth = 80;
+        _totalChannelVC.leftMargin = 30;
     }
     
     return _totalChannelVC;
@@ -118,26 +120,6 @@
                        @{
                            @"title": @"顶三楼",
                            @"otherInfo": @"4444"
-                           },
-                       @{
-                           @"title": @"三楼威武",
-                           @"otherInfo": @"5555"
-                           },
-                       @{
-                           @"title": @"楼上都是二缺",
-                           @"otherInfo": @"6666"
-                           },
-                       @{
-                           @"title": @"我是七楼",
-                           @"otherInfo": @"7777"
-                           },
-                       @{
-                           @"title": @"八王爷",
-                           @"otherInfo": @"8888"
-                           },
-                       @{
-                           @"title": @"九二格",
-                           @"otherInfo": @"9999"
                            }
                        ];
     

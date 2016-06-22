@@ -23,9 +23,12 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    
     self.view.backgroundColor = [UIColor colorWithRed:243/255.0 green:243/255.0 blue:243/255.0 alpha:1.0];
+    [self prepareLoad];
+}
 
+
+- (void)prepareLoad {
     [self setupChannelScrollView];
     [self setupContentScrollView];
     [self setupChannelControllers];
@@ -37,11 +40,13 @@
                     atIdnex:self.channelIndex];
 }
 
-
 #pragma mark - setup UI
 
 - (void)setupContentScrollView {
-    _contentScrollView = [[UIScrollView alloc] init];
+    if (!_contentScrollView) {
+        _contentScrollView = [[UIScrollView alloc] init];
+        [self.view addSubview:_contentScrollView];
+    }
     
     CGFloat x = 0;
     CGFloat y = CGRectGetMaxY(self.channelScrollView.frame) + 5;    // 5是间距
@@ -49,14 +54,12 @@
     CGFloat h = YS_SCREEN_HIGHT;
     _contentScrollView.frame = CGRectMake(x, y, w, h);
     _contentScrollView.delegate = self;
-    _contentScrollView.contentSize = CGSizeMake(w * self.channelTitilesData.count, 0);
+    _contentScrollView.contentSize = CGSizeMake(w * self.channelControllers.count, 0);
     _contentScrollView.showsHorizontalScrollIndicator = NO;
     _contentScrollView.showsVerticalScrollIndicator = NO;
     _contentScrollView.pagingEnabled = YES;
     _contentScrollView.bounces = NO;
     _contentScrollView.scrollEnabled = self.isAllowDrag;
-    
-    [self.view addSubview:_contentScrollView];
 }
 
 
@@ -132,9 +135,12 @@
 #pragma mark - Action
 
 - (void)update {
-    [self.channelScrollView update];
+    CGFloat y = CGRectGetMaxY(self.channelScrollView.frame) + 5;    // 5是间距
+    _contentScrollView.frame = CGRectMake(0, y, self.view.ys_width, self.view.ys_height - y);
+    _contentScrollView.contentSize = CGSizeMake(YS_SCREEN_WIDTH * self.channelControllers.count, 0);
     [self.contentScrollView layoutIfNeeded];
-    
+
+    [self.channelScrollView update];
     [self channelScrollView:self.channelScrollView
        didClickChannelLabel:[self getLabelWithIndex:self.channelIndex]
                     atIdnex:self.channelIndex];
@@ -173,10 +179,12 @@
 
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
     int index = scrollView.contentOffset.x / self.contentScrollView.ys_width;
+    if (index < 0 || index > self.channelTitilesData.count - 1) {
+        return;
+    }
     
     [self channelScrollView:self.channelScrollView didClickChannelLabel:[self getLabelWithIndex:index] atIdnex:index];
 }
-
 
 
 #pragma mark - 

@@ -45,6 +45,8 @@
         _totalChannelVC.scrollAnimTime = 0.5;
         _totalChannelVC.allowDrag = YES;        // 允许内容拖拽滚动
         _totalChannelVC.textScaleEnable = YES;  // 文字放大效果
+        _totalChannelVC.lineWidth = 80;
+        _totalChannelVC.leftMargin = 50;
         _totalChannelVC.channelTitilesData = @[@"这里是首页",
                                                @"hehe",
 //                                               @"前面是傻缺",
